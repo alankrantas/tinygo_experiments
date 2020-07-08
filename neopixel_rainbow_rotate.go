@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	LED_PIN          = machine.P1
+	LED_PIN          = machine.Pin(2)
 	LED_NUM          = 12
 	LED_MAX_LEVEL    = 64 // max 255
 	LED_ROTATE_DELAY = 50 // ms
