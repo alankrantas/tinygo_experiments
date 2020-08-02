@@ -25,12 +25,14 @@ func Init(pin machine.Pin) Device {
 }
 
 func (d *Device) ServoRoutine() {
-	for d.on {
-		pulse := valueMapping(uint16(d.angle), 0, 180, d.pulseMin, d.pulseMax)
-		d.pin.High()
-		time.Sleep(time.Microsecond * time.Duration(pulse))
-		d.pin.Low()
-		time.Sleep(time.Millisecond * 20)
+	for {
+		if d.on {
+			pulse := valueMapping(uint16(d.angle), 0, 180, d.pulseMin, d.pulseMax)
+			d.pin.High()
+			time.Sleep(time.Microsecond * time.Duration(pulse))
+			d.pin.Low()
+			time.Sleep(time.Millisecond * 20)
+		}
 	}
 }
 
