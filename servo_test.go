@@ -13,21 +13,21 @@ import (
 
 type Device struct {
 	pin      machine.Pin
-	on       bool
-	angle    uint8
-	pulseMin uint16
-	pulseMax uint16
+	attached bool
+	angle    int16
+	pulseMin int32
+	pulseMax int32
 }
 
-func Init(pin machine.Pin) Device {
+func Attach(pin machine.Pin) Device {
 	pin.Configure(machine.PinConfig{Mode: machine.PinOutput})
-	return Device{pin: pin, on: false, pulseMin: 600, pulseMax: 2400}
+	return Device{pin: pin, attached: false, pulseMin: 500, pulseMax: 2500}
 }
 
 func (d *Device) ServoRoutine() {
 	for {
-		if d.on {
-			pulse := valueMapping(uint16(d.angle), 0, 180, d.pulseMin, d.pulseMax)
+		if d.attached {
+			pulse := valueMapping(int32(d.angle), 0, 180, d.pulseMin, d.pulseMax)
 			d.pin.High()
 			time.Sleep(time.Microsecond * time.Duration(pulse))
 			d.pin.Low()
@@ -36,54 +36,57 @@ func (d *Device) ServoRoutine() {
 	}
 }
 
-func (d *Device) Angle(angle uint8) {
+func (d *Device) Write(angle int16) {
 	if angle < 0 {
 		angle = 0
 	} else if angle > 180 {
 		angle = 180
 	}
-	d.on = true
+	d.attached = true
 	d.angle = angle
 }
 
-func (d *Device) PulseRange(min, max uint16) {
+func (d *Device) Read() int16 {
+	return d.angle
+}
+
+func (d *Device) Attached() bool {
+	return d.attached
+}
+
+func (d *Device) Detach() {
+	d.attached = false
+}
+
+func (d *Device) PulseRange(min, max int32) {
 	d.pulseMin = min
 	d.pulseMax = max
 }
 
-func (d *Device) Deinit() {
-	d.on = false
-}
-
-func valueMapping(value, min, max, newMin, newMax uint16) float32 {
+func valueMapping(value, min, max, newMin, newMax int32) float32 {
 	scale := float32(value-min) / float32(max-min)
 	return float32(newMin) + scale*float32(newMax-newMin)
 }
 
 func main() {
 
-	servo1 := Init(machine.P8)
-	servo2 := Init(machine.P12)
+	servo := Attach(machine.D2)
 
-	go servo1.ServoRoutine()
-	go servo2.ServoRoutine()
+	// enable "PWM" function
+	go servo.ServoRoutine()
 
 	for i := 0; i <= 2; i++ {
-		servo1.Angle(0)
-		servo2.Angle(0)
+		servo.Write(0)
 		time.Sleep(time.Millisecond * 1000)
 
-		servo1.Angle(90)
-		servo2.Angle(90)
+		servo.Write(90)
 		time.Sleep(time.Millisecond * 1000)
 
-		servo1.Angle(180)
-		servo2.Angle(180)
+		servo.Write(180)
 		time.Sleep(time.Millisecond * 1000)
 	}
 
-	// stop "PWM" signal (otherwise the servos may turn again when main() ended)
-	servo1.Deinit()
-	servo2.Deinit()
+	// stop "PWM"
+	servo.Detach()
 
 }
