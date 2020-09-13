@@ -45,10 +45,12 @@ func wheel(pos uint8) color.RGBA {
 		g = pos * 3
 		b = 0
 	} else if pos < 170 {
+		pos -= 85
 		r = 0
 		g = 255 - pos*3
 		b = pos * 3
 	} else {
+		pos -= 170
 		r = pos * 3
 		g = 0
 		b = 255 - pos*3
