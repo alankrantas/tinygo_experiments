@@ -1,8 +1,9 @@
-// This is a test code for controlling servos with TinyGo.
+// An experimental TinyGo servo driver.
 // Basically, it uses GoRoutine to simulate continuous PWM signals.
 // However, this does not work on 8-bit AVR boards, probably due to their
-// lack of hardware timer issue.
-// Servos also need sufficient power (5V and at least 100-200 mA each) to run smoothly.
+// lack of hardware timer support.
+// Servos also require sufficient power (5V and at least 100-200 mA each)
+// to run smoothly.
 
 package main
 
@@ -76,13 +77,13 @@ func main() {
 	go servo.ServoRoutine()
 
 	for i := 0; i <= 2; i++ {
-		servo.Write(0)
+		servo.Write(0) // angle 0
 		time.Sleep(time.Millisecond * 1000)
 
-		servo.Write(90)
+		servo.Write(90) // angle 90
 		time.Sleep(time.Millisecond * 1000)
 
-		servo.Write(180)
+		servo.Write(180) // angle 180
 		time.Sleep(time.Millisecond * 1000)
 	}
 
