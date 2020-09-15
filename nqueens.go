@@ -15,7 +15,7 @@ var (
 func main() {
 	println("Calculating", maxQueens, "queens puzzle...")
 	placeQueen(0)
-	println(counter, " result(s)")
+	println(counter, "result(s)")
 }
 
 func placeQueen(columnPos uint8) {
