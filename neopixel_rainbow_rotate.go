@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	LED_PIN          = machine.Pin(4)
-	LED_NUM          = 25
+	LED_PIN          = machine.D2
+	LED_NUM          = 12
 	LED_MAX_LEVEL    = 64 // max 255
 	LED_ROTATE_DELAY = 50 // ms
 )
@@ -32,7 +32,7 @@ func main() {
 	rainbowSet()
 
 	for {
-		rainbowRotate()
+		rainbowRotate(true)
 		time.Sleep(time.Millisecond * LED_ROTATE_DELAY)
 	}
 
@@ -45,11 +45,11 @@ func rainbowSet() {
 		ledColor := [3]int16{0, 0, 0}
 		for j := range ledIndex {
 			if abs(int16(i)-ledIndex[j]) <= ledIndex[1] {
-				ledColor[j] = int16(LED_MAX_LEVEL) - abs(int16(i)-int16(ledIndex[j]))*ledChange
+				ledColor[j] = int16(LED_MAX_LEVEL) - abs(int16(i)-ledIndex[j])*ledChange
 			}
 		}
 		if int16(i) >= ledIndex[2] {
-			ledColor[0] = LED_MAX_LEVEL - int16(LED_NUM-uint8(i))*ledChange
+			ledColor[0] = LED_MAX_LEVEL - int16(LED_NUM-i)*ledChange
 		}
 		for j := range ledIndex {
 			if ledColor[j] > LED_MAX_LEVEL {
@@ -63,9 +63,16 @@ func rainbowSet() {
 	neoPixel.WriteColors(leds[:])
 }
 
-func rainbowRotate() {
-	var ledsTmp []color.RGBA = leds[1:LED_NUM]
-	ledsTmp = append(ledsTmp, leds[0])
+func rainbowRotate(clockwise bool) {
+	var ledsTmp []color.RGBA
+	if clockwise {
+		ledsTmp = leds[(LED_NUM - 1):]
+		for _, l := range leds[:(LED_NUM - 1)] {
+			ledsTmp = append(ledsTmp, l)
+		}
+	} else {
+		ledsTmp = append(leds[1:], leds[0])
+	}
 	copy(leds[:], ledsTmp[:])
 	neoPixel.WriteColors(leds[:])
 }
