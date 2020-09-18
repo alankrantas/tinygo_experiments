@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	LED_PIN          = machine.D2
-	LED_NUM          = 12
+	LED_PIN          = machine.Pin(4)
+	LED_NUM          = 25
 	LED_MAX_LEVEL    = 64 // max 255
 	LED_ROTATE_DELAY = 50 // ms
 )
@@ -39,19 +39,26 @@ func main() {
 }
 
 func rainbowSet() {
-	ledChange := uint8(LED_MAX_LEVEL / (LED_NUM / 3))
-	ledIndex := [3]uint8{0, uint8(LED_NUM / 3), uint8(LED_NUM / 3 * 2)}
+	ledChange := int16(LED_MAX_LEVEL / (LED_NUM / 3))
+	ledIndex := [3]int16{0, int16(LED_NUM / 3), int16(LED_NUM / 3 * 2)}
 	for i := range leds {
-		ledColor := [3]uint8{0, 0, 0}
+		ledColor := [3]int16{0, 0, 0}
 		for j := range ledIndex {
-			if abs(int8(uint8(i)-ledIndex[j])) <= ledIndex[1] {
-				ledColor[j] = LED_MAX_LEVEL - abs(int8(uint8(i)-ledIndex[j]))*ledChange
+			if abs(int16(i)-ledIndex[j]) <= ledIndex[1] {
+				ledColor[j] = int16(LED_MAX_LEVEL) - abs(int16(i)-int16(ledIndex[j]))*ledChange
 			}
 		}
-		if uint8(i) >= ledIndex[2] {
-			ledColor[0] = LED_MAX_LEVEL - (LED_NUM-uint8(i))*ledChange
+		if int16(i) >= ledIndex[2] {
+			ledColor[0] = LED_MAX_LEVEL - int16(LED_NUM-uint8(i))*ledChange
 		}
-		leds[i] = color.RGBA{R: ledColor[0], G: ledColor[1], B: ledColor[2]}
+		for j := range ledIndex {
+			if ledColor[j] > LED_MAX_LEVEL {
+				ledColor[j] = LED_MAX_LEVEL
+			} else if ledColor[j] < 0 {
+				ledColor[j] = 0
+			}
+		}
+		leds[i] = color.RGBA{R: uint8(ledColor[0]), G: uint8(ledColor[1]), B: uint8(ledColor[2])}
 	}
 	neoPixel.WriteColors(leds[:])
 }
@@ -63,10 +70,10 @@ func rainbowRotate() {
 	neoPixel.WriteColors(leds[:])
 }
 
-func abs(x int8) uint8 {
+func abs(x int16) int16 {
 	if x < 0 {
-		return uint8(-x)
+		return -x
 	} else {
-		return uint8(x)
+		return x
 	}
 }
