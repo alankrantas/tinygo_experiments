@@ -32,7 +32,7 @@ func (d *Device) ServoRoutine() {
 			d.pin.High()
 			time.Sleep(time.Microsecond * time.Duration(pulse))
 			d.pin.Low()
-			time.Sleep(time.Millisecond * 20)
+			time.Sleep(time.Microsecond * time.Duration(20000.0-pulse))
 		}
 	}
 }
