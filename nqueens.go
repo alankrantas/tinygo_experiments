@@ -25,9 +25,9 @@ func placeQueen(columnPos uint8) {
 			printBoard()
 		}
 	} else {
-		for i := uint8(0); i < maxQueens; i++ {
-			if verifyPos(columnPos, i) {
-				queens[columnPos] = i
+		for i := range queens {
+			if verifyPos(columnPos, uint8(i)) {
+				queens[columnPos] = uint8(i)
 				placeQueen(columnPos + 1)
 			}
 		}
@@ -45,9 +45,9 @@ func verifyPos(checkPos uint8, newPos uint8) bool {
 
 func printBoard() {
 	print(counter, " [")
-	for i := uint8(0); i < maxQueens; i++ {
+	for i := range queens {
 		print(queens[i] + 1)
-		if i < maxQueens-1 {
+		if uint8(i) < maxQueens-1 {
 			print(", ")
 		}
 	}
@@ -58,7 +58,6 @@ func printBoard() {
 func abs(x int16) int16 {
 	if x < 0 {
 		return -x
-	} else {
-		return x
 	}
+	return x
 }
