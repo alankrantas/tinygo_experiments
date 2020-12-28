@@ -45,8 +45,8 @@ func verifyPos(checkPos uint8, newPos uint8) bool {
 
 func printBoard() {
 	print(counter, " [")
-	for i := range queens {
-		print(queens[i] + 1)
+	for i, v := range queens {
+		print(v + 1)
 		if uint8(i) < maxQueens-1 {
 			print(", ")
 		}
