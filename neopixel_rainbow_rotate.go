@@ -66,10 +66,7 @@ func rainbowSet() {
 func rainbowRotate(clockwise bool) {
 	var ledsTmp []color.RGBA
 	if clockwise {
-		ledsTmp = leds[(LED_NUM - 1):]
-		for _, l := range leds[:(LED_NUM - 1)] {
-			ledsTmp = append(ledsTmp, l)
-		}
+		ledsTmp = append(leds[(LED_NUM-1):], leds[0:(LED_NUM-1)]...)
 	} else {
 		ledsTmp = append(leds[1:], leds[0])
 	}
@@ -80,7 +77,6 @@ func rainbowRotate(clockwise bool) {
 func abs(x int16) int16 {
 	if x < 0 {
 		return -x
-	} else {
-		return x
 	}
+	return x
 }
