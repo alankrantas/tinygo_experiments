@@ -17,7 +17,7 @@ const (
 	LED_PIN         = machine.D2
 	LED_NUM         = 12
 	LED_MAX_LEVEL   = 64 // max 255
-	LED_CYCLE_DELAY = 2  // ms
+	LED_CYCLE_DELAY = 50 // ms
 )
 
 var neoPixel ws2812.Device
