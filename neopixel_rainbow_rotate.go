@@ -21,7 +21,7 @@ const (
 
 var (
 	neoPixel ws2812.Device
-	leds     [LED_NUM]color.RGBA
+	leds     []color.RGBA = make([]color.RGBA, LED_NUM)
 )
 
 func main() {
@@ -70,8 +70,8 @@ func rainbowRotate(clockwise bool) {
 	} else {
 		ledsTmp = append(leds[1:], leds[0])
 	}
-	copy(leds[:], ledsTmp[:])
-	neoPixel.WriteColors(leds[:])
+	copy(leds, ledsTmp)
+	neoPixel.WriteColors(leds)
 }
 
 func abs(x int16) int16 {
