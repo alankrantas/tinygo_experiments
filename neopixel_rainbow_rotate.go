@@ -21,7 +21,7 @@ const (
 
 var (
 	neoPixel ws2812.Device
-	leds     []color.RGBA = make([]color.RGBA, LED_NUM)
+	leds = make([]color.RGBA, LED_NUM)
 )
 
 func main() {
