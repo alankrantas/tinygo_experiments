@@ -17,19 +17,22 @@ const (
 	LED_PIN         = machine.D2
 	LED_NUM         = 12
 	LED_MAX_LEVEL   = 64 // max 255
-	LED_CYCLE_DELAY = 2  // ms
+	LED_CYCLE_DELAY = 5  // ms
 )
 
 var neoPixel ws2812.Device
-var leds [LED_NUM]color.RGBA
+var leds []color.RGBA = make([]color.RGBA, LED_NUM)
 
 func main() {
 
 	LED_PIN.Configure(machine.PinConfig{Mode: machine.PinOutput})
 	neoPixel = ws2812.New(LED_PIN)
 
+	var cycle uint8
 	for {
-		rainbowCycle(LED_CYCLE_DELAY)
+		rainbowCycle(cycle)
+		cycle++
+		time.Sleep(time.Millisecond * LED_CYCLE_DELAY)
 	}
 
 }
@@ -61,13 +64,10 @@ func wheel(pos uint8) color.RGBA {
 	return color.RGBA{R: r, G: g, B: b}
 }
 
-func rainbowCycle(wait int) {
-	for j := 0; j < 255; j++ {
-		for i := range leds {
-			rcIndex := int(i*256/LED_NUM) + j
-			leds[i] = wheel(uint8(rcIndex))
-		}
-		neoPixel.WriteColors(leds[:])
-		time.Sleep(time.Millisecond * time.Duration(wait))
+func rainbowCycle(cycle uint8) {
+	for i := range leds {
+		rcIndex := int(i*256/LED_NUM) + int(cycle)
+		leds[i] = wheel(uint8(rcIndex))
 	}
+	neoPixel.WriteColors(leds)
 }
