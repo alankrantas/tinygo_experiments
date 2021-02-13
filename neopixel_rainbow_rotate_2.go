@@ -39,20 +39,21 @@ func main() {
 
 func wheel(pos uint8) color.RGBA {
 	var r, g, b uint8
-	if pos < 0 || pos > 255 {
+	switch {
+	case pos < 0 || pos > 255:
 		r = 0
 		g = 0
 		b = 0
-	} else if pos < 85 {
+	case pos < 85:
 		r = 255 - pos*3
 		g = pos * 3
 		b = 0
-	} else if pos < 170 {
+	case pos < 170:
 		pos -= 85
 		r = 0
 		g = 255 - pos*3
 		b = pos * 3
-	} else {
+	default:
 		pos -= 170
 		r = pos * 3
 		g = 0
