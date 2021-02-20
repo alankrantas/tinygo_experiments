@@ -78,7 +78,7 @@ func main() {
 }
 
 // Init : initialize a NeoPixels struct
-func (ws *NeoPixels) Init(pin machine.Pin, ledNum uint8, ledLevel float32) {
+func (ws *NeoPixels) Init(pin machine.Pin, ledNum int, ledLevel float32) {
 	pin.Configure(machine.PinConfig{Mode: machine.PinOutput})
 	ws.neo = ws2812.New(pin)
 	ws.colors = make([]color.RGBA, ledNum)
@@ -103,9 +103,9 @@ func (ws *NeoPixels) Fill(c color.RGBA) {
 }
 
 // FillRange : fill a color to certain NeoPIxels
-func (ws *NeoPixels) FillRange(c color.RGBA, start, end uint8) {
+func (ws *NeoPixels) FillRange(c color.RGBA, start, end int) {
 	for i := range ws.colors {
-		if uint8(i) >= start && uint8(i) <= end {
+		if i >= start && i <= end {
 			ws.colors[i] = colorLevel(c, ws.brightness)
 		}
 	}
@@ -122,7 +122,7 @@ func (ws *NeoPixels) Set(i int, c color.RGBA) {
 func (ws *NeoPixels) Rotate(clockwise bool) {
 	var colorsTmp []color.RGBA
 	if clockwise {
-		colorsTmp = append(ws.colors[(len(ws.colors)-1):], ws.colors[0:(len(ws.colors)-1)]...)
+		colorsTmp = append(ws.colors[(len(ws.colors)-1):], ws.colors[:(len(ws.colors)-1)]...)
 	} else {
 		colorsTmp = append(ws.colors[1:], ws.colors[0])
 	}
