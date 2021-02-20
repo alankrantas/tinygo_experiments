@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	ledPin      = machine.P0 // NeoPixels pin
+	ledPin      = machine.D0 // NeoPixels pin
 	ledNUm      = 12         // number of NeoPixels
 	ledMaxLevel = 0.5        // brightness level of NeoPxels (0~1)
 )
