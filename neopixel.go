@@ -120,13 +120,11 @@ func (ws *NeoPixels) Set(i int, c color.RGBA) {
 
 // Rotate : rotate NeoPixels
 func (ws *NeoPixels) Rotate(clockwise bool) {
-	var colorsTmp []color.RGBA
 	if clockwise {
-		colorsTmp = append(ws.colors[(len(ws.colors)-1):], ws.colors[:(len(ws.colors)-1)]...)
+		ws.colors = append(ws.colors[(len(ws.colors)-1):], ws.colors[:(len(ws.colors)-1)]...)
 	} else {
-		colorsTmp = append(ws.colors[1:], ws.colors[0])
+		ws.colors = append(ws.colors[1:], ws.colors[0])
 	}
-	copy(ws.colors, colorsTmp)
 }
 
 // Rainbow : fill rainbow colors to NeoPixels
