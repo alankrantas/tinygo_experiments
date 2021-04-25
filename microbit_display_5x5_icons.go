@@ -9,97 +9,89 @@ import (
 	"tinygo.org/x/drivers/microbitmatrix"
 )
 
-var (
+type MatrixDisplay struct {
 	display microbitmatrix.Device
 	leds    [5][5]uint8
-)
-
-/*
-To draw a icon, simply set the 5x5 led matrix:
-
-leds = [5][5]uint8{
-	{0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0},
+	enable  bool
 }
 
-1 = light up and 0 = no light.
-Once set, the icon will stay on in the matrix until you change it.
-*/
+func (m *MatrixDisplay) Init(rotation uint8) {
+	defer func() {
+		go m.Display()
+	}()
+	m.enable = true
+	m.display = microbitmatrix.New()
+	m.display.Configure(microbitmatrix.Config{Rotation: rotation})
+}
+
+func (m *MatrixDisplay) SetImage(leds [5][5]uint8) {
+	m.leds = leds
+}
+
+func (m *MatrixDisplay) Display() {
+	for m.enable {
+		for i := int16(0); i < 5; i++ {
+			for j := int16(0); j < 5; j++ {
+				if m.leds[i][j] > 0 {
+					m.display.SetPixel(i, j, color.RGBA{255, 255, 255, 255})
+					continue
+				}
+				m.display.SetPixel(i, j, color.RGBA{0, 0, 0, 0})
+			}
+		}
+		m.display.Display()
+	}
+}
+
+func (m *MatrixDisplay) Clear() {
+	var ledsEmpty [5][5]uint8
+	m.leds = ledsEmpty
+}
+
+func (m *MatrixDisplay) Deinit() {
+	m.enable = false
+}
 
 func main() {
 
-	setDisplay()
-	go displayRoutine()
-	sleep(100) // wait a bit to ensure the goroutine runs
+	matrix := MatrixDisplay{}
+	matrix.Init(0)
+	matrix.Clear()
+	time.Sleep(time.Millisecond * 100)
 
 	for {
-
-		leds = [5][5]uint8{ // heart
+		matrix.SetImage([5][5]uint8{ // heart
 			{0, 1, 0, 1, 0},
 			{1, 1, 1, 1, 1},
 			{1, 1, 1, 1, 1},
 			{0, 1, 1, 1, 0},
 			{0, 0, 1, 0, 0},
-		}
-		sleep(500)
-		displayClear()
-		sleep(500)
+		})
+		time.Sleep(time.Millisecond * 750)
+		matrix.Clear()
+		time.Sleep(time.Millisecond * 250)
 
-		leds = [5][5]uint8{ // smile face
+		matrix.SetImage([5][5]uint8{ // smile face
 			{0, 1, 0, 1, 0},
 			{0, 1, 0, 1, 0},
 			{0, 0, 0, 0, 0},
 			{1, 0, 0, 0, 1},
 			{0, 1, 1, 1, 0},
-		}
-		sleep(500)
-		displayClear()
-		sleep(500)
+		})
+		time.Sleep(time.Millisecond * 750)
+		matrix.Clear()
+		time.Sleep(time.Millisecond * 250)
 
-		leds = [5][5]uint8{ // musical note
+		matrix.SetImage([5][5]uint8{ // music note
 			{0, 0, 1, 1, 0},
 			{0, 0, 1, 1, 1},
 			{0, 0, 1, 0, 1},
 			{1, 1, 1, 0, 0},
 			{1, 1, 1, 0, 0},
-		}
-		sleep(500)
-		displayClear()
-		sleep(500)
+		})
+		time.Sleep(time.Millisecond * 750)
+		matrix.Clear()
+		time.Sleep(time.Millisecond * 250)
 	}
 
-}
-
-// utility functions
-
-func setDisplay() {
-	display = microbitmatrix.New()
-	display.Configure(microbitmatrix.Config{Rotation: 0})
-}
-
-func displayRoutine() { // goroutine
-	for {
-		for i := int16(0); i < 5; i++ {
-			for j := int16(0); j < 5; j++ {
-				if leds[i][j] > 0 {
-					display.SetPixel(i, j, color.RGBA{255, 255, 255, 255})
-				} else {
-					display.SetPixel(i, j, color.RGBA{0, 0, 0, 0})
-				}
-			}
-		}
-		display.Display()
-	}
-}
-
-func displayClear() {
-	var ledsEmpty [5][5]uint8
-	leds = ledsEmpty
-}
-
-func sleep(delay uint16) {
-	time.Sleep(time.Millisecond * time.Duration(delay))
 }
