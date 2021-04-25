@@ -41,13 +41,13 @@ Note:
 * a capacitive touch (on the front logo) at ```P26``` (no need to pull up and pin.Get() returns ```false``` when touched)
 * a mic at ```P29``` and its enable pin/indicator LED at ```P28```. See [this script](https://github.com/alankrantas/tinygo_experiments/blob/master/microbit_v2_mic_level.go) for demostration.
 * the ```LED``` pin is just a dummy
-* the onboard LSM303AGR is on the internal I2C bus, it can be used without additional configuration. For external I2C devices, you need to use the following pins:
+* the onboard LSM303AGR is on the internal I2C bus (```I2C0```). For external I2C devices, you need to use the following pins:
 
 ```golang
 machine.I2C1.Configure(machine.I2CConfig{
-	SCL:       machine.P19,  // machine.SCL1_PIN
-	SDA:       machine.P20,  // machine.SDA1_PIN
-	// Frequency: machine.TWI_FREQ_400KHZ,
+	SCL:       machine.P19, // machine.SCL1_PIN
+	SDA:       machine.P20, // machine.SDA1_PIN
+	Frequency: machine.TWI_FREQ_400KHZ,
 })
 ```
 
