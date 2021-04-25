@@ -39,7 +39,7 @@ Note:
 
 * a buzzer at ```P27```
 * a capacitive touch (on the front logo) at ```P26``` (no need to pull up and pin.Get() returns ```false``` when touched)
-* a mic at ```P29``` and its enable pin/indicator LED at ```P28```. But I have not yet figured out how to use it.
+* a mic at ```P29``` and its enable pin/indicator LED at ```P28```. See [this script](https://github.com/alankrantas/tinygo_experiments/blob/master/microbit_v2_mic_level.go) for demostration.
 * the ```LED``` pin is just a dummy
 * the onboard LSM303AGR is on the internal I2C bus, it can be used without additional configuration. For external I2C devices, you need to use the following pins:
 
@@ -64,6 +64,4 @@ go mod init <project name>
 go mod tidy
 ```
 
-
-
-
+Use ```go mod tidy``` after you add or remove an external package.
