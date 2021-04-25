@@ -37,8 +37,10 @@ Note:
 
 2. BBC micro:bit v2 has 
 
-* a buzzer at ```P27``` or ```Pin(0)```
-* a capacitive touch (on the front logo) at ```P26``` or ```Pin(36)```
+* a buzzer at ```P27```
+* a capacitive touch (on the front logo) at ```P26``` (no need to pull up and pin.Get() returns ```false``` when touched)
+* a mic at ```P29``` and its enable pin/indicator LED at ```P28```. But I have not yet figured out how to use it.
+* the ```LED``` pin is just a dummy
 * the onboard LSM303AGR is on the internal I2C bus, it can be used without additional configuration. For external I2C devices, you need to use the following pins:
 
 ```golang
