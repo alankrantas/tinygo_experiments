@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	ledPin      = machine.D0 // NeoPixels pin
+	ledPin      = machine.P0 // NeoPixels pin
 	ledNUm      = 12         // number of NeoPixels
 	ledMaxLevel = 0.5        // brightness level of NeoPxels (0~1)
 )
@@ -19,62 +19,6 @@ type NeoPixels struct {
 	neo        ws2812.Device
 	colors     []color.RGBA
 	brightness float32
-}
-
-func main() {
-	var leds NeoPixels
-
-	leds.Init(ledPin, ledNUm, ledMaxLevel)
-	leds.Clear()
-
-	cs := []color.RGBA{
-		color.RGBA{R: 255, G: 0, B: 0},
-		color.RGBA{R: 0, G: 255, B: 0},
-		color.RGBA{R: 0, G: 0, B: 255},
-		color.RGBA{R: 255, G: 255, B: 0},
-		color.RGBA{R: 0, G: 255, B: 255},
-		color.RGBA{R: 255, G: 0, B: 255},
-		color.RGBA{R: 255, G: 255, B: 255},
-		color.RGBA{R: 0, G: 0, B: 0},
-	}
-
-	// fill
-	for _, c := range cs {
-		leds.Fill(c)
-		leds.Show()
-		time.Sleep(time.Millisecond * 250)
-	}
-
-	// chase
-	for _, c := range cs {
-		for i := range leds.colors {
-			leds.Set(i, c)
-			leds.Show()
-			time.Sleep(time.Millisecond * 25)
-		}
-	}
-
-	// rotate
-	leds.Rainbow(0)
-	leds.Show()
-	for i := 0; i < 50; i++ {
-		if i < 25 {
-			leds.Rotate(true)
-		} else {
-			leds.Rotate(false)
-		}
-		leds.Show()
-		time.Sleep(time.Millisecond * 50)
-	}
-
-	// rainbow cycle
-	var pos uint8
-	for {
-		leds.Rainbow(pos)
-		leds.Show()
-		time.Sleep(time.Microsecond * 2500)
-		pos++
-	}
 }
 
 // Init : initialize a NeoPixels struct
@@ -177,4 +121,60 @@ func colorLevel(c color.RGBA, level float32) color.RGBA {
 	c.G = uint8(float32(c.G) * level)
 	c.B = uint8(float32(c.B) * level)
 	return c
+}
+
+func main() {
+	var leds NeoPixels
+
+	leds.Init(ledPin, ledNUm, ledMaxLevel)
+	leds.Clear()
+
+	cs := []color.RGBA{
+		color.RGBA{R: 255, G: 0, B: 0},
+		color.RGBA{R: 0, G: 255, B: 0},
+		color.RGBA{R: 0, G: 0, B: 255},
+		color.RGBA{R: 255, G: 255, B: 0},
+		color.RGBA{R: 0, G: 255, B: 255},
+		color.RGBA{R: 255, G: 0, B: 255},
+		color.RGBA{R: 255, G: 255, B: 255},
+		color.RGBA{R: 0, G: 0, B: 0},
+	}
+
+	// fill
+	for _, c := range cs {
+		leds.Fill(c)
+		leds.Show()
+		time.Sleep(time.Millisecond * 250)
+	}
+
+	// chase
+	for _, c := range cs {
+		for i := range leds.colors {
+			leds.Set(i, c)
+			leds.Show()
+			time.Sleep(time.Millisecond * 25)
+		}
+	}
+
+	// rotate
+	leds.Rainbow(0)
+	leds.Show()
+	for i := 0; i < 50; i++ {
+		if i < 25 {
+			leds.Rotate(true)
+		} else {
+			leds.Rotate(false)
+		}
+		leds.Show()
+		time.Sleep(time.Millisecond * 50)
+	}
+
+	// rainbow cycle
+	var pos uint8
+	for {
+		leds.Rainbow(pos)
+		leds.Show()
+		time.Sleep(time.Microsecond * 2500)
+		pos++
+	}
 }
