@@ -12,69 +12,60 @@ import (
 	"time"
 )
 
-type Device struct {
+type Servo struct {
 	pin      machine.Pin
-	attached bool
-	angle    int16
-	pulseMin int32
-	pulseMax int32
+	Attached bool
+	Angle    int16
+	PulseMin int16
+	PulseMax int16
 }
 
-func Attach(pin machine.Pin) Device {
-	pin.Configure(machine.PinConfig{Mode: machine.PinOutput})
-	return Device{pin: pin, attached: false, pulseMin: 500, pulseMax: 2500}
+func (s *Servo) Init(pin machine.Pin) {
+	defer func() {
+		go s.servoRoutine()
+	}()
+	s.pin = pin
+	s.pin.Configure(machine.PinConfig{Mode: machine.PinOutput})
+	s.PulseMin = 600
+	s.PulseMax = 2400
 }
 
-func (d *Device) ServoRoutine() {
+func (s *Servo) servoRoutine() {
 	for {
-		if d.attached {
-			pulse := valueMapping(int32(d.angle), 0, 180, d.pulseMin, d.pulseMax)
-			d.pin.High()
+		println(s.Angle)
+		if s.Attached {
+			pulse := valueMapping(int16(s.Angle), 0, 180, s.PulseMin, s.PulseMax)
+			s.pin.High()
 			time.Sleep(time.Microsecond * time.Duration(pulse))
-			d.pin.Low()
+			s.pin.Low()
 			time.Sleep(time.Microsecond * time.Duration(20000.0-pulse))
 		}
 	}
 }
 
-func (d *Device) Write(angle int16) {
+func (s *Servo) Write(angle int16) {
 	if angle < 0 {
 		angle = 0
 	} else if angle > 180 {
 		angle = 180
 	}
-	d.attached = true
-	d.angle = angle
+	s.Attached = true
+	s.Angle = angle
 }
 
-func (d *Device) Read() int16 {
-	return d.angle
+func (s *Servo) Detach() {
+	s.Attached = false
 }
 
-func (d *Device) Attached() bool {
-	return d.attached
-}
-
-func (d *Device) Detach() {
-	d.attached = false
-}
-
-func (d *Device) PulseRange(min, max int32) {
-	d.pulseMin = min
-	d.pulseMax = max
-}
-
-func valueMapping(value, min, max, newMin, newMax int32) float32 {
+func valueMapping(value, min, max, newMin, newMax int16) float32 {
 	scale := float32(value-min) / float32(max-min)
 	return float32(newMin) + scale*float32(newMax-newMin)
 }
 
 func main() {
 
-	servo := Attach(machine.D2)
-
-	// enable "PWM" function
-	go servo.ServoRoutine()
+	servo := Servo{}
+	servo.Init(machine.P0)
 
 	for i := 0; i <= 2; i++ {
 		servo.Write(0) // angle 0
