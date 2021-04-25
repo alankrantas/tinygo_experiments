@@ -32,7 +32,6 @@ func (s *Servo) Init(pin machine.Pin) {
 
 func (s *Servo) servoRoutine() {
 	for {
-		println(s.Angle)
 		if s.Attached {
 			pulse := valueMapping(int16(s.Angle), 0, 180, s.PulseMin, s.PulseMax)
 			s.pin.High()
