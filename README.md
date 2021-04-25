@@ -28,7 +28,7 @@ func main() {
 * [Arduino Uno](https://tinygo.org/microcontrollers/machine/arduino/) / [Nano](https://tinygo.org/microcontrollers/machine/arduino-nano/)
 * [Arduino Nano 33 IoT](https://tinygo.org/microcontrollers/machine/arduino-nano33/)
 * [Bluepill](https://tinygo.org/microcontrollers/machine/bluepill/)
-* [BBC micro:bit v1](https://tinygo.org/microcontrollers/machine/microbit/) / [v2](https://github.com/tinygo-org/tinygo/blob/release/src/machine/board_microbit-v2.go)
+* [BBC micro:bit v1](https://tinygo.org/microcontrollers/machine/microbit/) / [v2](https://tinygo.org/microcontrollers/machine/microbit-v2/)
 * [ESP8266 NodeMCU](https://tinygo.org/microcontrollers/machine/nodemcu/) / [D1 mini](https://tinygo.org/microcontrollers/machine/d1mini/)
 
 Note:
