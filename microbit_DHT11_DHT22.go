@@ -1,11 +1,11 @@
-// Read humidity and temperature data from DHT11/DHT22.
-//
-// Due to some reason, this only works on BBC micro:bit.
+// Read humidity and temperature from DHT11/22. Only works on BBC micro:bit.
 
 package main
 
 import (
+	"errors"
 	"machine"
+	"runtime/interrupt"
 	"time"
 )
 
@@ -14,33 +14,30 @@ const (
 	DHT22
 )
 
+// Device defines a dht sensor object
 type Device struct {
 	pin         machine.Pin
-	model       uint8
-	humidity    int32
-	temperature int32
-	checksumOk  bool
+	Model       uint8
+	Humidity    int32
+	Temperature int32
+	ChecksumOk  bool
 }
 
+// New returns a new device
 func New(pin machine.Pin, model uint8) Device {
-	return Device{pin: pin, model: model}
+	return Device{pin: pin, Model: model}
 }
 
-func (d *Device) Measure() (cks bool, err error) {
-
+// Measure reads from the device and calculate humidity/temperature values
+func (d *Device) Measure() error {
 	var data [40]bool
-	var result [5]uint8
 
-	// initialize protocol
-	time.Sleep(time.Millisecond * 1)
 	d.pin.Configure(machine.PinConfig{Mode: machine.PinOutput})
 	d.pin.Low()
 	time.Sleep(time.Millisecond * 18)
-	d.pin.High()
+	d.pin.Configure(machine.PinConfig{Mode: machine.PinInputPullup})
 	time.Sleep(time.Microsecond * 20)
-	d.pin.Configure(machine.PinConfig{Mode: machine.PinInput})
 
-	// wait for ready signal
 	for d.pin.Get() {
 	}
 	for !d.pin.Get() {
@@ -48,21 +45,32 @@ func (d *Device) Measure() (cks bool, err error) {
 	for d.pin.Get() {
 	}
 
-	// read 40 bits from DHT
+	mask := interrupt.Disable()
+	defer interrupt.Restore(mask)
+
 	for i := uint8(0); i < 40; i++ {
 		for !d.pin.Get() {
 		}
+		/*
+			start := time.Now()
+			for d.pin.Get() {
+			}
+			data[i] = time.Since(start) > time.Microsecond*28
+		*/
 		time.Sleep(time.Microsecond * 28)
-		if d.pin.Get() {
-			data[i] = true
-			if i < 39 {
-				for d.pin.Get() {
+		data[i] = d.pin.Get()
+		if data[i] && i < 39 {
+			start := time.Now()
+			for d.pin.Get() {
+				if time.Since(start) > time.Microsecond*70 {
+					return errors.New("sensor timeout")
 				}
 			}
 		}
 	}
 
-	// convert bits to numbers
+	var result [5]uint8
+
 	for i := uint8(0); i < 5; i++ {
 		for j := uint8(0); j < 8; j++ {
 			if data[8*i+j] {
@@ -71,15 +79,12 @@ func (d *Device) Measure() (cks bool, err error) {
 		}
 	}
 
-	// verify checksum
 	dtaSum := uint8(result[0] + result[1] + result[2] + result[3])
-	d.checksumOk = (dtaSum == result[4])
-	cks = d.checksumOk
+	d.ChecksumOk = (dtaSum == result[4])
 
-	// calculate data
-	if d.model == DHT11 { // DHT11
-		d.humidity = int32(int32(result[0])*100+int32(result[1])) * 10
-		d.temperature = int32(int32(result[2])*100+int32(result[3])) * 10
+	if d.Model == DHT11 { // DHT11
+		d.Humidity = (int32(result[0])*100 + int32(result[1])) * 10
+		d.Temperature = (int32(result[2])*100 + int32(result[3])) * 10
 
 	} else { // DHT22
 		tSign := int32(1)
@@ -87,38 +92,25 @@ func (d *Device) Measure() (cks bool, err error) {
 			result[2] -= (1 << 7)
 			tSign = -1
 		}
-		d.humidity = int32(int32(result[0])*(1<<8)+int32(result[1])) * 100
-		d.temperature = int32(int32(result[2])*(1<<8)+int32(result[3])) * 100 * tSign
+		d.Humidity = (int32(result[0])*(1<<8) + int32(result[1])) * 100
+		d.Temperature = (int32(result[2])*(1<<8) + int32(result[3])) * 100 * tSign
 	}
-
-	err = nil
-	return
-}
-
-func (d *Device) ReadHumidity() (int32, error) {
-	return d.humidity, nil
-}
-
-func (d *Device) ReadTemperature() (int32, error) {
-	return d.temperature, nil
-}
-
-func (d *Device) ReadChecksumOk() (bool, error) {
-	return d.checksumOk, nil
+	return nil
 }
 
 func main() {
 
-	dht := New(machine.P2, DHT11)
+	sensor := New(machine.P0, DHT11)
 
 	for {
+		if err := sensor.Measure(); err != nil {
+			println(err)
+		}
 
-		cks, _ := dht.Measure()
-		h, _ := dht.ReadHumidity()
-		t, _ := dht.ReadTemperature()
-		println("H:", h, "/ T:", t, "/ CKS ok:", cks)
+		println("H:", sensor.Humidity,
+			"% / T:", sensor.Temperature,
+			"*C / Checksum ok:", sensor.ChecksumOk)
 		time.Sleep(time.Millisecond * 2000)
-
 	}
 
 }
