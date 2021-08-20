@@ -51,6 +51,16 @@ machine.I2C1.Configure(machine.I2CConfig{
 })
 ```
 
+3. BBC micro:bit v1 and v2 don't need the -port parameter in ```tinygo flash```.
+
+## AVR-GCC
+
+8-bit AVR boards require this external tool to flash the code.
+
+For Windows, download [this](https://blog.zakkemble.net/avr-gcc-builds/) and put ```avr-gcc-xx.x.x-x64-windows\bin``` in the PATH variable.
+
+For Linux, run ```sudo apt-get install gcc-avr avr-libc avrdude```.
+
 ## Download TinyGo drivers
 
 ```
