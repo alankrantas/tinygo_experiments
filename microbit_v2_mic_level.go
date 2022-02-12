@@ -13,11 +13,11 @@ type Mic struct {
 
 // Init initializes mic pins
 func (mic *Mic) Init() {
-	mic.run = machine.P28
+	mic.run = machine.MIC_LED
 	mic.run.Configure(machine.PinConfig{Mode: machine.PinOutput})
 	mic.run.High()
 	machine.InitADC()
-	mic.in = machine.ADC{machine.P29}
+	mic.in = machine.ADC{Pin: machine.MIC}
 	mic.in.Configure(machine.ADCConfig{})
 }
 
