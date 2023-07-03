@@ -129,7 +129,7 @@ tinygo flash -target=<target> -port=<port> main.go
 
 Find the target name in [official website](https://tinygo.org/docs/reference/microcontrollers/) (does not list all the targets) or [official repo](https://github.com/tinygo-org/tinygo/tree/release/src/machine).
 
-To look up the port, run ```mode``` on Windows or ```dmesg | grep tty``` on Linux.
+To look up the port, run ```mode``` on Windows (like ```COM{x}```) or ```dmesg | grep tty``` on Linux (like ```/dev/tty{something}```).
 
 > For devices using UF2 firmware, make sure the device has entered bootloader mode before flashing. In bootloader mode the device would be on a different port as well.
 >
@@ -137,7 +137,7 @@ To look up the port, run ```mode``` on Windows or ```dmesg | grep tty``` on Linu
 >
 >For Arduino Nano 33 IoT, you can install the Adafruit UF2 bootloader with [this Arduino script](https://github.com/adafruit/uf2-samdx1/releases/download/v3.14.0/update-bootloader-nano33iot-v3.14.0.ino). (After that you can upgrade the boodloader with .uf2 files.)
 > 
-> For DigiSpark (ATTiny85), install the bootloader (On Windoes use [Zadig](https://github.com/micronucleus/micronucleus/tree/master/windows_driver_installer)) and download [micronucleus](https://github.com/micronucleus/micronucleus/tree/master/commandline). Add it to your $PATH. TinyGo will ask you to re-connect DigiSpark before flashing.
+> For DigiSpark (ATTiny85), install the bootloader (On Windoes use [Zadig](https://github.com/micronucleus/micronucleus/tree/master/windows_driver_installer)) and download [micronucleus](https://github.com/micronucleus/micronucleus/tree/master/commandline). Add it to your $PATH. TinyGo will ask you to re-connect DigiSpark before flashing (no port needed).
 >
 > For Bluepills, get a ST-LINK/V2 programmer and download/unzip [OpenOCD](https://freddiechopin.info/en/download/category/4-openocd), add the ```<path>\openocd-0.10.0\bin``` to $PATH. Port is not needed but *you may have to hold down reset button before flashing and release as soon as OpenOCD's first message appears*...
 
