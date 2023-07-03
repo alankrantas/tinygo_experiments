@@ -113,22 +113,22 @@ go mod init <project name>
 
 ### Compile and Flash Script
 
-Find out the [target name](https://tinygo.org/docs/reference/microcontrollers/) (some are not listed and has to lool up [here](https://github.com/tinygo-org/tinygo/tree/release/src/machine)) and port of your device.
-
-To look up the port, run ```mode``` on Windows and ```dmesg | grep tty``` on Linux.
-
-> For devices using UF2 firmware, you don't need to specify the port, although you'll have to make sure the device has entered bootloader mode.
->
-> For most SAMD21/51 and nRF boards with UF2 firmwares, pressing the reset button twice. For Raspberry Pi Pico you'll need to hold down the BOOTSEL button and re-connect USB. The micro:bits has a separate chip as USB interface so it can be flashed directly.
->
->For Arduino Nano 33 IoT, you can install the UF2 bootloader with [this Arduino script](https://github.com/adafruit/uf2-samdx1/releases/download/v3.14.0/update-bootloader-nano33iot-v3.14.0.ino). (After that you can upgrade the boodloader with .uf2 files.)
-
 If external drivers are used, update ```go.mod``` with
 
 ```bash
 go mod tidy
 ```
 
+Find out the [target name](https://tinygo.org/docs/reference/microcontrollers/) (some are not listed and has to lool up [here](https://github.com/tinygo-org/tinygo/tree/release/src/machine)) and port of your device.
+
+To look up the port, run ```mode``` on Windows and ```dmesg | grep tty``` on Linux.
+
+> For devices using UF2 firmware, make sure the device has entered bootloader mode before flashing. In bootloader mode the device would be on a different port as well.
+>
+> For most SAMD21/51 and nRF boards with Adafruit UF2 firmwares, pressing the reset button twice. For Raspberry Pi Pico you'll need to hold down the BOOTSEL button and re-connect USB. The micro:bits has a separate chip as USB interface so it can be flashed directly. Both RPi Pico and micro:bits do not need to specify ports when flashing.
+>
+>For Arduino Nano 33 IoT, you can install the Adafruit UF2 bootloader with [this Arduino script](https://github.com/adafruit/uf2-samdx1/releases/download/v3.14.0/update-bootloader-nano33iot-v3.14.0.ino). (After that you can upgrade the boodloader with .uf2 files.)
+> 
 Then run
 
 ```bash
