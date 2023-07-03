@@ -10,10 +10,10 @@ import (
 
 func main() {
 
-  // pin 27/26 are on I2C1 bus
+  	// pin 27/26 are on I2C1 bus
 	machine.I2C1.Configure(machine.I2CConfig{
-		SCL:       machine.GPIO27,
-		SDA:       machine.GPIO26,
+		SCL:       machine.GP27,
+		SDA:       machine.GP26,
 		Frequency: machine.TWI_FREQ_400KHZ,
 	})
 
